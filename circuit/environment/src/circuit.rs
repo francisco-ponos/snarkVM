@@ -26,10 +26,10 @@ use snarkvm_algorithms::r1cs::LookupTable;
 type Field = <console::Testnet3 as console::Environment>::Field;
 
 thread_local! {
-    pub(super) static CIRCUIT: Rc<RefCell<R1CS<Field>>> = Rc::new(RefCell::new(R1CS::new()));
-    pub(super) static IN_WITNESS: Rc<RefCell<bool>> = Rc::new(RefCell::new(false));
-    pub(super) static ZERO: LinearCombination<Field> = LinearCombination::zero();
-    pub(super) static ONE: LinearCombination<Field> = LinearCombination::one();
+    pub static CIRCUIT: Rc<RefCell<R1CS<Field>>> = Rc::new(RefCell::new(R1CS::new()));
+    pub static IN_WITNESS: Rc<RefCell<bool>> = Rc::new(RefCell::new(false));
+    pub static ZERO: LinearCombination<Field> = LinearCombination::zero();
+    pub static ONE: LinearCombination<Field> = LinearCombination::one();
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]

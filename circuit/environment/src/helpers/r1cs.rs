@@ -32,13 +32,13 @@ pub struct R1CS<F: PrimeField> {
     constraints: Vec<Constraint<F>>,
     lookup_constraints: Vec<LookupConstraint<F>>,
     counter: Counter<F>,
-    pub(crate) tables: Vec<LookupTable<F>>,
+    pub tables: Vec<LookupTable<F>>,
     nonzeros: (u64, u64, u64),
 }
 
 impl<F: PrimeField> R1CS<F> {
     /// Returns a new instance of a constraint system.
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             constants: Default::default(),
             public: vec![Variable::Public(0u64, Rc::new(F::one()))],
@@ -51,22 +51,22 @@ impl<F: PrimeField> R1CS<F> {
         }
     }
 
-    pub(crate) fn add_lookup_table(&mut self, table: LookupTable<F>) {
+    pub fn add_lookup_table(&mut self, table: LookupTable<F>) {
         self.tables.push(table);
     }
 
     /// Appends the given scope to the current environment.
-    pub(crate) fn push_scope<S: Into<String>>(&mut self, name: S) -> Result<(), String> {
+    pub fn push_scope<S: Into<String>>(&mut self, name: S) -> Result<(), String> {
         self.counter.push(name)
     }
 
     /// Removes the given scope from the current environment.
-    pub(crate) fn pop_scope<S: Into<String>>(&mut self, name: S) -> Result<(), String> {
+    pub fn pop_scope<S: Into<String>>(&mut self, name: S) -> Result<(), String> {
         self.counter.pop(name)
     }
 
     /// Returns a new constant with the given value and scope.
-    pub(crate) fn new_constant(&mut self, value: F) -> Variable<F> {
+    pub fn new_constant(&mut self, value: F) -> Variable<F> {
         let variable = Variable::Constant(Rc::new(value));
         self.constants.push(variable.clone());
         self.counter.increment_constant();
@@ -74,7 +74,7 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Returns a new public variable with the given value and scope.
-    pub(crate) fn new_public(&mut self, value: F) -> Variable<F> {
+    pub fn new_public(&mut self, value: F) -> Variable<F> {
         let variable = Variable::Public(self.public.len() as u64, Rc::new(value));
         self.public.push(variable.clone());
         self.counter.increment_public();
@@ -82,7 +82,7 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Returns a new private variable with the given value and scope.
-    pub(crate) fn new_private(&mut self, value: F) -> Variable<F> {
+    pub fn new_private(&mut self, value: F) -> Variable<F> {
         let variable = Variable::Private(self.private.len() as u64, Rc::new(value));
         self.private.push(variable.clone());
         self.counter.increment_private();
@@ -90,7 +90,7 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Adds one constraint enforcing that `(A * B) == C`.
-    pub(crate) fn enforce(&mut self, constraint: Constraint<F>) {
+    pub fn enforce(&mut self, constraint: Constraint<F>) {
         let (a_nonzeros, b_nonzeros, c_nonzeros) = constraint.num_nonzeros();
         self.nonzeros.0 += a_nonzeros;
         self.nonzeros.1 += b_nonzeros;
@@ -101,7 +101,7 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Adds one constraint enforcing that `(A * B) == C`.
-    pub(crate) fn enforce_lookup(&mut self, constraint: LookupConstraint<F>) {
+    pub fn enforce_lookup(&mut self, constraint: LookupConstraint<F>) {
         let (a_nonzeros, b_nonzeros, c_nonzeros) = constraint.num_nonzeros();
         self.nonzeros.0 += a_nonzeros;
         self.nonzeros.1 += b_nonzeros;
@@ -112,77 +112,77 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Returns `true` if all constraints in the environment are satisfied.
-    pub(crate) fn is_satisfied(&self) -> bool {
+    pub fn is_satisfied(&self) -> bool {
         self.constraints.iter().all(|constraint| constraint.is_satisfied())
     }
 
     /// Returns `true` if all constraints in the current scope are satisfied.
-    pub(crate) fn is_satisfied_in_scope(&self) -> bool {
+    pub fn is_satisfied_in_scope(&self) -> bool {
         self.counter.is_satisfied_in_scope()
     }
 
     /// Returns the current scope.
-    pub(crate) fn scope(&self) -> Scope {
+    pub fn scope(&self) -> Scope {
         self.counter.scope()
     }
 
     /// Returns the number of constants in the constraint system.
-    pub(crate) fn num_constants(&self) -> u64 {
+    pub fn num_constants(&self) -> u64 {
         self.constants.len() as u64
     }
 
     /// Returns the number of public variables in the constraint system.
-    pub(crate) fn num_public(&self) -> u64 {
+    pub fn num_public(&self) -> u64 {
         self.public.len() as u64
     }
 
     /// Returns the number of private variables in the constraint system.
-    pub(crate) fn num_private(&self) -> u64 {
+    pub fn num_private(&self) -> u64 {
         self.private.len() as u64
     }
 
     /// Returns the number of constraints in the constraint system.
-    pub(crate) fn num_constraints(&self) -> u64 {
+    pub fn num_constraints(&self) -> u64 {
         self.constraints.len() as u64
     }
 
     /// Returns the number of lookup constraints in the constraint system.
-    pub(crate) fn num_lookup_constraints(&self) -> u64 {
+    pub fn num_lookup_constraints(&self) -> u64 {
         self.lookup_constraints.len() as u64
     }
 
     /// Returns the number of nonzeros in the constraint system.
-    pub(crate) fn num_nonzeros(&self) -> (u64, u64, u64) {
+    pub fn num_nonzeros(&self) -> (u64, u64, u64) {
         self.nonzeros
     }
 
     /// Returns the number of constants for the current scope.
-    pub(crate) fn num_constants_in_scope(&self) -> u64 {
+    pub fn num_constants_in_scope(&self) -> u64 {
         self.counter.num_constants_in_scope()
     }
 
     /// Returns the number of public variables for the current scope.
-    pub(crate) fn num_public_in_scope(&self) -> u64 {
+    pub fn num_public_in_scope(&self) -> u64 {
         self.counter.num_public_in_scope()
     }
 
     /// Returns the number of private variables for the current scope.
-    pub(crate) fn num_private_in_scope(&self) -> u64 {
+    pub fn num_private_in_scope(&self) -> u64 {
         self.counter.num_private_in_scope()
     }
 
     /// Returns the number of constraints for the current scope.
-    pub(crate) fn num_constraints_in_scope(&self) -> u64 {
+    pub fn num_constraints_in_scope(&self) -> u64 {
         self.counter.num_constraints_in_scope()
     }
 
     /// Returns the number of lookup constraints for the current scope.
-    pub(crate) fn num_lookup_constraints_in_scope(&self) -> u64 {
+    pub fn num_lookup_constraints_in_scope(&self) -> u64 {
         self.counter.num_lookup_constraints_in_scope()
     }
 
     /// Returns the number of nonzeros for the current scope.
-    pub(crate) fn num_nonzeros_in_scope(&self) -> (u64, u64, u64) {
+    pub fn num_nonzeros_in_scope(&self) -> (u64, u64, u64) {
         self.counter.num_nonzeros_in_scope()
     }
 
@@ -202,7 +202,7 @@ impl<F: PrimeField> R1CS<F> {
     }
 
     /// Returns the lookup constraints in the constraint system.
-    pub(crate) fn to_lookup_constraints(&self) -> &Vec<LookupConstraint<F>> {
+    pub fn to_lookup_constraints(&self) -> &Vec<LookupConstraint<F>> {
         &self.lookup_constraints
     }
 }
