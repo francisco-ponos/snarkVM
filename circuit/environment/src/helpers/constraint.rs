@@ -17,21 +17,21 @@ use snarkvm_fields::PrimeField;
 
 #[derive(Clone, Debug)]
 pub struct Constraint<F: PrimeField>(
-    pub(crate) Scope,
-    pub(crate) LinearCombination<F>,
-    pub(crate) LinearCombination<F>,
-    pub(crate) LinearCombination<F>,
+    pub Scope,
+    pub LinearCombination<F>,
+    pub LinearCombination<F>,
+    pub LinearCombination<F>,
 );
 
 impl<F: PrimeField> Constraint<F> {
     /// Returns the number of non-zero terms required by this constraint.
-    pub(crate) fn num_nonzeros(&self) -> (u64, u64, u64) {
+    pub fn num_nonzeros(&self) -> (u64, u64, u64) {
         let (a, b, c) = (&self.1, &self.2, &self.3);
         (a.num_nonzeros(), b.num_nonzeros(), c.num_nonzeros())
     }
 
     /// Returns `true` if the constraint is satisfied.
-    pub(crate) fn is_satisfied(&self) -> bool {
+    pub fn is_satisfied(&self) -> bool {
         let (scope, a, b, c) = (&self.0, &self.1, &self.2, &self.3);
         let a = a.value();
         let b = b.value();
